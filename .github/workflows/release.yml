@@ -31,11 +31,8 @@ jobs:
           zip -r obsidian-line-ending-copyfix.zip obsidian-line-ending-copyfix/
 
       - name: Create release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          tag="${GITHUB_REF#refs/tags/}"
-
-          gh release create "$tag" \
-            --title="$tag" \
-            obsidian-line-ending-copyfix.zip
+        # https://github.com/ncipollo/release-action
+        uses: ncipollo/release-action@v1.7.3
+        with:
+            artifacts: "obsidian-line-ending-copyfix.zip"
+            token: ${{ secrets.GITHUB_TOKEN }}
