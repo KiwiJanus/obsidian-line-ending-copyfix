@@ -1,5 +1,5 @@
 {
-	"id": "obsidian-line-ending-copyfix",
+	"id": "line-ending-copyfix",
 	"name": "Fix Line Endings on Copy",
 	"version": "1.0.0",
 	"minAppVersion": "1.8.10",
