@@ -1,94 +1,60 @@
-# Obsidian Sample Plugin
+# LineEndingCopyFix
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+**LineEndingCopyFix** is an Obsidian plugin that ensures content copied from your notes uses platform-appropriate line endings. Currently, it targets **Windows users**, replacing Unix-style line feeds (`\n`) with Windows-style carriage return + line feed (`\r\n`) **only when copying text**. Your markdown files remain untouched.
 
-This project uses TypeScript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in TypeScript Definition format, which contains TSDoc comments describing what it does.
+---
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open Sample Modal" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
+## ✨ Features
 
-## First time developing plugins?
+-   🔁 Automatically replaces `\n` with `\r\n` **on copy** if your OS is Windows
+-   🧠 Works with:
+    -   Manual text selections (`Ctrl + C`)
+    -   Code block “copy” buttons
+-   🔒 Does **not** modify your stored `.md` files
+-   💻 Windows-only by default (future support for more platforms is planned)
 
-Quick starting guide for new plugin devs:
+---
 
-- Check if [someone already developed a plugin for what you want](https://obsidian.md/plugins)! There might be an existing plugin similar enough that you can partner up with.
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `main.ts` to `main.js`.
-- Make changes to `main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
+## 📦 Installation
 
-## Releasing new releases
+### From Obsidian: Community Plugins (Recommended)
 
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
+Not yet available, I still need to submit it to the Obsidian community plugin directory.
 
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`.
-> The command will bump version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`
+### From GitHub: Manual Installation
 
-## Adding your plugin to the community plugin list
+1. Download the latest release from the [Releases page](https://github.com/KiwiJanus/obsidian-line-ending-copyfix/releases)
+2. Extract the archive into your vault’s plugins folder `<your-vault>/.obsidian/plugins`. The folder structure should look like this:
+    ```
+    <your-vault>/.obsidian/plugins/obsidian-line-ending-copyfix/
+    ├── main.js
+    └── manifest.json
+    ```
+3. Restart Obsidian or reload plugins from **Settings → Community Plugins**
+4. In Obsidian, open **Settings → Community Plugins**
+5. In the list of installed plugins, find **Fix Line Endings on Copy** and enable it.
 
-- Check the [plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines).
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
+---
 
-## How to use
+## 🧠 Why?
 
-- Clone this repo.
-- Make sure your NodeJS is at least v16 (`node --version`).
-- `npm i` or `yarn` to install dependencies.
-- `npm run dev` to start compilation in watch mode.
+Obsidian uses LF (`\n`) line endings across all platforms, which is great for consistency.  
+However, many Windows applications (like Notepad, Excel, or internal tools) expect CRLF (`\r\n`) line endings. Without this, copied content may appear "squished" into a single line.
 
-## Manually installing the plugin
+This plugin solves that by converting line endings **only at the time of copying**, so your notes stay clean and portable.
 
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
+---
 
-## Improve code quality with eslint (optional)
-- [ESLint](https://eslint.org/) is a tool that analyzes your code to quickly find problems. You can run ESLint against your plugin to find common bugs and ways to improve your code. 
-- To use eslint with this project, make sure to install eslint from terminal:
-  - `npm install -g eslint`
-- To use eslint to analyze this project use this command:
-  - `eslint main.ts`
-  - eslint will then create a report with suggestions for code improvement by file and line number.
-- If your source code is in a folder, such as `src`, you can use eslint with this command to analyze all files in that folder:
-  - `eslint .\src\`
+## ⚙️ Future Plans
 
-## Funding URL
+-   Submit to Obsidian's community plugin directory
+-   Add command palette support for manual line-ending conversion
+-   Make line-ending style configurable (LF, CRLF, CR)
+-   Toggle plugin behavior with a settings UI
+-   Add support for various platforms and their line-ending conventions
 
-You can include funding URLs where people who use your plugin can financially support it.
+---
 
-The simple way is to set the `fundingUrl` field to your link in your `manifest.json` file:
+## 💬 Feedback / Contributing
 
-```json
-{
-    "fundingUrl": "https://buymeacoffee.com"
-}
-```
-
-If you have multiple URLs, you can also do:
-
-```json
-{
-    "fundingUrl": {
-        "Buy Me a Coffee": "https://buymeacoffee.com",
-        "GitHub Sponsor": "https://github.com/sponsors",
-        "Patreon": "https://www.patreon.com/"
-    }
-}
-```
-
-## API Documentation
-
-See https://github.com/obsidianmd/obsidian-api
+Bug reports, feature requests, and pull requests are welcome on the [GitHub Repository](https://github.com/KiwiJanus/obsidian-line-ending-copyfix)
