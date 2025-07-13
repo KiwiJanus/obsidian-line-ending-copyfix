@@ -1,5 +1,3 @@
-# LineEndingCopyFix
-
 **LineEndingCopyFix** is an Obsidian plugin that ensures content copied from your notes uses platform-appropriate line endings. Currently, it targets **Windows users**, replacing Unix-style line feeds (`\n`) with Windows-style carriage return + line feed (`\r\n`) **only when copying text**. Your markdown files remain untouched.
 
 ---
