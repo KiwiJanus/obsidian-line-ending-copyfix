@@ -6,7 +6,7 @@ export default class LineEndingCopyFixPlugin extends Plugin {
 
 	async onload() {
 		if (!this.isWindows) {
-			console.log("LineEndingCopyFixPlugin: Not on Windows, plugin disabled.");
+			console.log("LineEndingCopyFixPlugin: Not on Windows, plugin functions disabled.");
 			return;
 		}
 
@@ -37,8 +37,6 @@ export default class LineEndingCopyFixPlugin extends Plugin {
 		if (event.clipboardData) {
 			event.clipboardData.setData("text/plain", modified);
 		}
-
-		console.log("LineEndingCopyFixPlugin: Modified clipboard contents via copy event.");
 	};
 
 	private patchClipboardWrite() {
@@ -54,15 +52,12 @@ export default class LineEndingCopyFixPlugin extends Plugin {
 			const modified = plugin.convertLineEndings(text);
 			return plugin.originalWriteText!.call(this, modified);
 		};
-
-		console.log("LineEndingCopyFixPlugin: Patched navigator.clipboard.writeText.");
 	}
 
 	private restoreClipboardWrite() {
 		if (this.originalWriteText) {
 			navigator.clipboard.writeText = this.originalWriteText;
 			this.originalWriteText = undefined;
-			console.log("LineEndingCopyFixPlugin: Restored original clipboard.writeText.");
 		}
 	}
 
