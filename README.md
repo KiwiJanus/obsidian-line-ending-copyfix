@@ -39,7 +39,7 @@ Not yet available, I still need to submit it to the Obsidian community plugin di
 ## 🧠 Why?
 
 Obsidian uses LF (`\n`) line endings across all platforms, which is great for consistency.  
-However, many Windows applications (like Notepad, Excel, or internal tools) expect CRLF (`\r\n`) line endings. Without this, copied content may appear "squished" into a single line.
+However, many older Windows applications expect CRLF (`\r\n`) line endings. Without this, copied content may appear "squished" into a single line.
 
 This plugin solves that by converting line endings **only at the time of copying**, so your notes stay clean and portable.
 
