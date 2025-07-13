@@ -24,9 +24,18 @@ jobs:
       - name: Build plugin
         run: npm run build
 
+      - name: Create plugin ZIP
+        run: |
+          mkdir -p obsidian-line-ending-copyfix
+          cp main.js manifest.json obsidian-line-ending-copyfix/
+          zip -r obsidian-line-ending-copyfix.zip obsidian-line-ending-copyfix/
+
       - name: Create release
-        # https://github.com/ncipollo/release-action
-        uses: ncipollo/release-action@v1.7.3
-        with:
-            artifacts: "main.js,manifest.json"
-            token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag="${GITHUB_REF#refs/tags/}"
+
+          gh release create "$tag" \
+            --title="$tag" \
+            obsidian-line-ending-copyfix.zip
