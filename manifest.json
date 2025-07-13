@@ -2,9 +2,10 @@
 	"id": "obsidian-line-ending-copyfix",
 	"name": "Fix Line Endings on Copy",
 	"version": "1.0.0",
-	"minAppVersion": "0.15.0",
-	"description": "Change line endings to CRLF for Windows when copying text.",
+	"minAppVersion": "1.8.10",
+	"description": "Change line endings to CRLF when copying text on Windows (add carriage return).",
 	"author": "KiwiJanus",
 	"authorUrl": "https://github.com/KiwiJanus",
-	"isDesktopOnly": false
+	"fundingUrl": "https://coff.ee/kiwijanus",
+	"isDesktopOnly": true
 }
