@@ -47,7 +47,7 @@ This plugin solves that by converting line endings **only at the time of copying
 
 ## ⚙️ Future Plans
 
--   Submit to Obsidian's community plugin directory
+-   Submit to Obsidian's community plugin directory (pending)
 -   Add command palette support for manual line-ending conversion
 -   Make line-ending style configurable (LF, CRLF, CR)
 -   Toggle plugin behavior with a settings UI
