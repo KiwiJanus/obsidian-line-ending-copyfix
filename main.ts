@@ -1,7 +1,7 @@
-import { Plugin } from "obsidian";
+import { Plugin, Platform } from "obsidian";
 
 export default class LineEndingCopyFixPlugin extends Plugin {
-	private isWindows = process.platform === "win32";
+	private isWindows = Platform.isWin;
 	private originalWriteText?: (text: string) => Promise<void>;
 
 	async onload() {
