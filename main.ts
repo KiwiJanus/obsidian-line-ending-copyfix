@@ -1,4 +1,4 @@
-import { Plugin, Platform } from "obsidian";
+import { Plugin, Platform, WorkspaceWindow } from "obsidian";
 
 export default class LineEndingCopyFixPlugin extends Plugin {
 	private isWindows = Platform.isWin;
@@ -10,23 +10,29 @@ export default class LineEndingCopyFixPlugin extends Plugin {
 			return;
 		}
 
-		document.addEventListener("copy", this.onCopy);
-		this.patchClipboardWrite();
+		// Add copy event listener on main window.
+		this.registerDomEvent(document, "copy", this.onCopy);
 
+		// Add copy event listener on pop-out windows.
+		this.registerEvent(
+			this.app.workspace.on("window-open", (win: WorkspaceWindow, window: Window) => {
+				this.registerDomEvent(window.document, "copy", this.onCopy);
+			})
+		);
+
+		// Overwrite Obsidian clipboard write function
+		this.patchClipboardWrite();
 		console.log("LineEndingCopyFixPlugin: Loaded and active on Windows.");
 	}
 
 	onunload() {
 		if (!this.isWindows) return;
-
-		document.removeEventListener("copy", this.onCopy);
 		this.restoreClipboardWrite();
-
 		console.log("LineEndingCopyFixPlugin: Unloaded and cleaned up.");
 	}
 
 	private onCopy = (event: ClipboardEvent) => {
-		const selection = document.getSelection();
+		const selection = activeDocument.getSelection();
 		if (!selection) return;
 
 		const text = selection.toString();
