@@ -13,6 +13,8 @@ export default class LineEndingCopyFixPlugin extends Plugin {
 		// Add copy event listener on main window.
 		this.registerDomEvent(document, "copy", this.onCopy);
 
+		// TODO: Register copy event listener on all existing pop-out windows should plugin be enabled while they are open.
+
 		// Add copy event listener on pop-out windows.
 		this.registerEvent(
 			this.app.workspace.on("window-open", (win: WorkspaceWindow, window: Window) => {
@@ -33,15 +35,19 @@ export default class LineEndingCopyFixPlugin extends Plugin {
 
 	private onCopy = (event: ClipboardEvent) => {
 		const selection = activeDocument.getSelection();
-		if (!selection) return;
+
+		if (!selection || selection.isCollapsed) {
+			return;
+		}
 
 		const text = selection.toString();
 		const modified = this.convertLineEndings(text);
 
-		event.preventDefault();
-
 		if (event.clipboardData) {
 			event.clipboardData.setData("text/plain", modified);
+		}
+		else {
+			console.warn("LineEndingCopyFixPlugin: Clipboard API not available.");
 		}
 	};
 
