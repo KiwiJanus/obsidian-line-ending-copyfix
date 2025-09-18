@@ -10,6 +10,8 @@ An Obsidian plugin that ensures content copied from your notes uses platform-app
 -   🧠 Works with:
     -   Manual text selections (`Ctrl + C`)
     -   Code block “copy” buttons
+    -   Retains obsidian's behaviour where copying without text selected copies the current line
+    -   Pop-out windows
 -   🔒 Does **not** modify your stored `.md` files
 -   💻 Windows-only by default (future support for more platforms is planned)
 
@@ -47,11 +49,11 @@ This plugin solves that by converting line endings **only at the time of copying
 
 ## ⚙️ Future Plans
 
--   Submit to Obsidian's community plugin directory (pending)
+-   Submit to Obsidian's community plugin directory (approval pending)
 -   Add command palette support for manual line-ending conversion
 -   Make line-ending style configurable (LF, CRLF, CR)
 -   Toggle plugin behavior with a settings UI
--   Add support for various platforms and their line-ending conventions
+-   Add support for various platforms and their line-ending conventions if someone needs it
 
 ---
 
