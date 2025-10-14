@@ -6,7 +6,6 @@ export default class LineEndingCopyFixPlugin extends Plugin {
 
 	async onload() {
 		if (!this.isWindows) {
-			console.log("LineEndingCopyFixPlugin: Not on Windows, plugin functions disabled.");
 			return;
 		}
 
@@ -45,9 +44,6 @@ export default class LineEndingCopyFixPlugin extends Plugin {
 
 		if (event.clipboardData) {
 			event.clipboardData.setData("text/plain", modified);
-		}
-		else {
-			console.warn("LineEndingCopyFixPlugin: Clipboard API not available.");
 		}
 	};
 
