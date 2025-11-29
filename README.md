@@ -21,9 +21,12 @@ An Obsidian plugin that ensures content copied from your notes uses platform-app
 
 ### From Obsidian: Community Plugins (Recommended)
 
-Not yet available, I still need to submit it to the Obsidian community plugin directory.
+This plugin is now published to the Obsidian Community Plugins directory. Install it directly from Obsidian:
 
-### From GitHub: Manual Installation
+- Open **Settings → Community Plugins → Browse** and search for `Fix Line Endings on Copy`, then install and enable it.
+- Or open the plugin directly in Obsidian using this link: `obsidian://show-plugin?id=line-ending-copyfix`.
+
+### From GitHub: Manual Installation (Fallback)
 
 1. Download the latest release from the [Releases page](https://github.com/KiwiJanus/obsidian-line-ending-copyfix/releases)
 2. Extract the archive into your vault’s plugins folder `<your-vault>/.obsidian/plugins`. The folder structure should look like this:
