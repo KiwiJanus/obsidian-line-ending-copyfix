@@ -8,9 +8,10 @@ An Obsidian plugin that ensures content copied from your notes uses platform-app
 
 -   🔁 Automatically replaces `\n` with `\r\n` **on copy** if your OS is Windows
 -   🧠 Works with:
-    -   Manual text selections (`Ctrl + C`)
+    -   Manual text selections (`Ctrl + C`) without truncating long, virtualized editor documents
+    -   Retains Obsidian's behaviour where copying without text selected copies the current line
     -   Code block “copy” buttons
-    -   Retains obsidian's behaviour where copying without text selected copies the current line
+    -   Reading View selections, including HTML formatting
     -   Pop-out windows
 -   🔒 Does **not** modify your stored `.md` files
 -   💻 Windows-only by default (future support for more platforms is planned)
@@ -47,6 +48,8 @@ Obsidian uses LF (`\n`) line endings across all platforms, which is great for co
 However, many older Windows applications expect CRLF (`\r\n`) line endings. Without this, copied content may appear "squished" into a single line.
 
 This plugin solves that by converting line endings **only at the time of copying**, so your notes stay clean and portable.
+
+Editor copying is handled through Obsidian's CodeMirror editor state, so lines outside the currently rendered viewport are included.
 
 ---
 

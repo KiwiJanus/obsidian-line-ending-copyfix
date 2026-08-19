@@ -1,76 +1,119 @@
 import { Plugin, Platform, WorkspaceWindow } from "obsidian";
+import { EditorView } from "@codemirror/view";
+
+type ClipboardPatch = {
+	original: (text: string) => Promise<void>;
+	replacement: (text: string) => Promise<void>;
+};
 
 export default class LineEndingCopyFixPlugin extends Plugin {
 	private isWindows = Platform.isWin;
-	private originalWriteText?: (text: string) => Promise<void>;
+	private clipboardPatches = new Map<Clipboard, ClipboardPatch>();
+	private handledDocuments = new Set<Document>();
 
 	async onload() {
-		if (!this.isWindows) {
-			return;
-		}
+		if (!this.isWindows) return;
 
-		// Add copy event listener on main window.
-		this.registerDomEvent(document, "copy", this.onCopy);
-
-		// TODO: Register copy event listener on all existing pop-out windows should plugin be enabled while they are open.
-
-		// Add copy event listener on pop-out windows.
-		this.registerEvent(
-			this.app.workspace.on("window-open", (win: WorkspaceWindow, window: Window) => {
-				this.registerDomEvent(window.document, "copy", this.onCopy);
-			})
+		// CodeMirror owns the real editor state, including lines that are not
+		// currently rendered in the virtualized editor DOM.
+		this.registerEditorExtension(
+			EditorView.clipboardOutputFilter.of((text) => this.convertLineEndings(text))
 		);
 
-		// Overwrite Obsidian clipboard write function
-		this.patchClipboardWrite();
-		console.log("LineEndingCopyFixPlugin: Loaded and active on Windows.");
+		this.setupWindow(window);
+		this.app.workspace.iterateAllLeaves((leaf) => {
+			const viewWindow = leaf.view?.containerEl.ownerDocument.defaultView;
+			if (viewWindow) this.setupWindow(viewWindow);
+		});
+
+		this.registerEvent(
+			this.app.workspace.on("window-open", (_win: WorkspaceWindow, popoutWindow: Window) => {
+				this.setupWindow(popoutWindow);
+			})
+		);
 	}
 
 	onunload() {
 		if (!this.isWindows) return;
-		this.restoreClipboardWrite();
-		console.log("LineEndingCopyFixPlugin: Unloaded and cleaned up.");
+		this.restoreClipboardWrites();
 	}
 
-	private onCopy = (event: ClipboardEvent) => {
-		const selection = activeDocument.getSelection();
-
-		if (!selection || selection.isCollapsed) {
-			return;
+	private setupWindow(targetWindow: Window) {
+		if (!this.handledDocuments.has(targetWindow.document)) {
+			this.handledDocuments.add(targetWindow.document);
+			this.registerDomEvent(targetWindow.document, "copy", this.onReadingCopy);
 		}
 
-		const text = selection.toString();
-		const modified = this.convertLineEndings(text);
+		this.patchClipboardWrite(targetWindow);
+	}
 
-		if (event.clipboardData) {
-			event.clipboardData.setData("text/plain", modified);
+	private onReadingCopy = (event: ClipboardEvent) => {
+		const target = event.target as Node | null;
+		const eventWindow = (event as ClipboardEvent & { view?: Window }).view;
+		const currentDocument = event.currentTarget as Document | null;
+		const document = target?.ownerDocument ?? currentDocument ?? eventWindow?.document ?? window.document;
+		const selection = document?.getSelection();
+
+		// Leave collapsed selections to Obsidian/CodeMirror, which copies the
+		// current line using its native behavior.
+		if (!selection || selection.isCollapsed || !this.isReadingSelection(selection)) return;
+		if (!event.clipboardData || selection.rangeCount === 0) return;
+
+		const text = selection.toString();
+		const range = selection.getRangeAt(0);
+		const ownerDocument = range.commonAncestorContainer.ownerDocument;
+		if (!ownerDocument) return;
+		const container = ownerDocument.createElement("div");
+		container.appendChild(range.cloneContents());
+
+		try {
+			event.clipboardData.clearData();
+			event.clipboardData.setData("text/plain", this.convertLineEndings(text));
+			event.clipboardData.setData("text/html", container.innerHTML);
+			event.preventDefault();
+		} catch {
+			// If the host refuses clipboard writes, leave native copy untouched.
 		}
 	};
 
-	private patchClipboardWrite() {
-		if (this.originalWriteText) {
-			// Already patched
-			return;
-		}
-
-		this.originalWriteText = navigator.clipboard.writeText;
-
-		const plugin = this;
-		navigator.clipboard.writeText = async function (text: string): Promise<void> {
-			const modified = plugin.convertLineEndings(text);
-			return plugin.originalWriteText!.call(this, modified);
-		};
+	private isReadingSelection(selection: Selection): boolean {
+		return this.isReadingNode(selection.anchorNode) && this.isReadingNode(selection.focusNode);
 	}
 
-	private restoreClipboardWrite() {
-		if (this.originalWriteText) {
-			navigator.clipboard.writeText = this.originalWriteText;
-			this.originalWriteText = undefined;
+	private isReadingNode(node: Node | null): boolean {
+		let element = node instanceof Element ? node : node?.parentElement;
+		while (element) {
+			if (element.classList.contains("markdown-reading-view")) return true;
+			element = element.parentElement;
 		}
+		return false;
+	}
+
+	private patchClipboardWrite(targetWindow: Window) {
+		const clipboard = targetWindow.navigator.clipboard;
+		if (!clipboard || this.clipboardPatches.has(clipboard)) return;
+
+		const original = clipboard.writeText;
+		if (typeof original !== "function") return;
+
+		const plugin = this;
+		const replacement = function (this: Clipboard, text: string): Promise<void> {
+			return original.call(this, plugin.convertLineEndings(text));
+		};
+
+		clipboard.writeText = replacement;
+		this.clipboardPatches.set(clipboard, { original, replacement });
+	}
+
+	private restoreClipboardWrites() {
+		for (const [clipboard, patch] of this.clipboardPatches) {
+			if (clipboard.writeText === patch.replacement) clipboard.writeText = patch.original;
+		}
+		this.clipboardPatches.clear();
+		this.handledDocuments.clear();
 	}
 
 	private convertLineEndings(text: string): string {
-		// Replace LF with CRLF for Windows
-		return text.replace(/\n/g, "\r\n");
+		return text.replace(/\r\n|\r|\n/g, "\r\n");
 	}
 }
